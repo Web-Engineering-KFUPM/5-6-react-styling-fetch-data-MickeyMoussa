@@ -324,17 +324,46 @@ import UserModal from './components/UserModal'
 
 function App() {
 
+   
    const [searchTerm, setSearchTerm] = useState('')
-
-
    const [users, setUsers] = useState([])
    const [filteredUsers, setFilteredUsers] = useState([])
+   const [loading, setLoading] = useState(true)
+   const [error, setError] = useState(null)
    const [showModal, setShowModal] = useState(false)
    const [selectedUser, setSelectedUser] = useState(null)
 
    useEffect(() => {
-   
+      const fetchUsers = async () => {
+         setLoading(true)
+         setError(null)
+         try {
+            const response = await fetch('https://jsonplaceholder.typicode.com/users')
+            if (!response.ok) throw new Error(`Network response was not ok (${response.status})`)
+            const data = await response.json()
+            setUsers(data)
+            setFilteredUsers(data)
+         } catch (err) {
+            setError(err.message || 'Failed to fetch users')
+         } finally {
+            setLoading(false)
+         }
+      }
+
+      fetchUsers()
    }, [])
+
+   useEffect(() => {
+      if (!searchTerm) {
+         setFilteredUsers(users)
+         return
+      }
+
+      const filtered = users.filter(user =>
+         user.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      setFilteredUsers(filtered)
+   }, [searchTerm, users])
 
    const handleUserClick = (user) => {
       setSelectedUser(user)
@@ -356,10 +385,23 @@ function App() {
          </header>
 
          <Container className="mb-4">
-            <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+               <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
 
-           
-            <UserList users={filteredUsers.length ? filteredUsers : users} onUserClick={handleUserClick} />
+               {loading && (
+                  <div className="d-flex justify-content-center my-4">
+                     <Spinner animation="border" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                     </Spinner>
+                  </div>
+               )}
+
+               {error && (
+                  <Alert variant="danger">{error}</Alert>
+               )}
+
+               {!loading && !error && (
+                  <UserList users={filteredUsers} onUserClick={handleUserClick} />
+               )}
 
             <UserModal show={showModal} user={selectedUser} onHide={handleCloseModal} />
          </Container>
