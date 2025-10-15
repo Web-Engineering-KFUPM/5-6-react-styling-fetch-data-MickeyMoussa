@@ -323,47 +323,54 @@ import SearchBar from './components/SearchBar'
 import UserModal from './components/UserModal'
 
 function App() {
-  const [users, setUsers] = useState([])
 
-  useEffect(() => {
-    {/*API fetch logic*/}
+   const [searchTerm, setSearchTerm] = useState('')
 
-  }, [])
 
-  const handleUserClick = (user) => {
-  }
+   const [users, setUsers] = useState([])
+   const [filteredUsers, setFilteredUsers] = useState([])
+   const [showModal, setShowModal] = useState(false)
+   const [selectedUser, setSelectedUser] = useState(null)
 
-  const handleCloseModal = () => {
-  }
+   useEffect(() => {
+   
+   }, [])
 
-  return (
-    <div className="app">
-      <header className="">
-        <Container>
-          <h1 className="">User Management Dashboard</h1>
-          <p className="">Manage and view user information</p>
-        </Container>
-      </header>
+   const handleUserClick = (user) => {
+      setSelectedUser(user)
+      setShowModal(true)
+   }
 
-      <Container className="">
-        <SearchBar />
+   const handleCloseModal = () => {
+      setShowModal(false)
+      setSelectedUser(null)
+   }
 
-        {/* {loading && <Spinner ... />} */}
-        {/* {error && <Alert ...>{error}</Alert>} */}
-        {/* <UserList users={filteredUsers} onUserClick={handleUserClick} /> */}
+   return (
+      <div className="app">
+         <header className="bg-primary text-white py-3 mb-4 shadow">
+            <Container>
+               <h1 className="h2 mb-0">User Management Dashboard</h1>
+               <p className="mb-0 opacity-75">Manage and view user information</p>
+            </Container>
+         </header>
 
-        <UserModal />
-      </Container>
+         <Container className="mb-4">
+            <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
 
-      <footer className="">
-        <Container>
-          <p className="text-center text-muted mb-0">
-            &copy; 2024 User Management Dashboard
-          </p>
-        </Container>
-      </footer>
-    </div>
-  )
+           
+            <UserList users={filteredUsers.length ? filteredUsers : users} onUserClick={handleUserClick} />
+
+            <UserModal show={showModal} user={selectedUser} onHide={handleCloseModal} />
+         </Container>
+
+         <footer className="bg-light py-4 mt-5">
+            <Container>
+               <p className="text-center text-muted mb-0">&copy; 2024 User Management Dashboard</p>
+            </Container>
+         </footer>
+      </div>
+   )
 }
 
 export default App
