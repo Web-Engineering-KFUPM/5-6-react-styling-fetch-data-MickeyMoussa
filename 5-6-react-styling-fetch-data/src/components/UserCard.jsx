@@ -17,7 +17,9 @@ function UserCard({ user, onUserClick }) {
           <strong>Email:</strong> {user.email}<br />
           <strong>Phone:</strong> {user.phone}
         </Card.Text>
-      {/* Buttotn*/}
+        <div className="d-grid">
+          <Button variant="primary" onClick={() => onUserClick(user)}>View Details</Button>
+        </div>
       
       </Card.Body>
     </Card>
